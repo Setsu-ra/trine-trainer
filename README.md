@@ -1,4 +1,4 @@
-# Trine Trainer v1.0.0
+# Trine Trainer v1.0.1
 
 Web公開用の静的サイト版です。サーバー処理やビルドは不要です。
 
@@ -21,4 +21,4 @@ Web公開用の静的サイト版です。サーバー処理やビルドは不�
 - 1回目トラインの実在パターン指定
 - Retry / Replay
 
-Version: 1.0.0
+Version: 1.0.1

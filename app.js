@@ -3067,22 +3067,6 @@ function activateStackShare() {
   const reasons = [];
   if (!ids.has('ST')) reasons.push('終末の双腕：STが頭割り範囲にいません');
 
-  // タンクを操作している場合は、相方NPCタンクと2m以内で受ける必要がある。
-  if (selectedSlot === 'MT' || selectedSlot === 'ST') {
-    const partnerTankId = selectedSlot === 'MT' ? 'ST' : 'MT';
-    const controlledTank = participants.find(member => member.id === selectedSlot);
-    const npcPartnerTank = participants.find(member => member.id === partnerTankId && !member.isPlayer);
-    if (controlledTank && npcPartnerTank) {
-      const tankPairDistanceYalms = Math.hypot(
-        controlledTank.x - npcPartnerTank.x,
-        controlledTank.y - npcPartnerTank.y
-      ) / PX_PER_YALM;
-      if (tankPairDistanceYalms > 2) {
-        reasons.push('終末の双腕：NPCタンクとの距離が2mを超えています');
-      }
-    }
-  }
-
   for (const member of inside) {
     if (member.id !== 'MT' && member.id !== 'ST') reasons.push(`終末の双腕：${member.id}が頭割り範囲に入りました`);
   }
