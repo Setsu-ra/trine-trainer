@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trine Trainer v1.0.0</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="game-panel">
+      <header class="title-row">
+        <div>
+          <p class="eyebrow">仕様書 v1.0 準拠・軽量表示・役割別NPC移動</p>
+          <h1>Trine Trainer <span>v1.0.0</span></h1>
+        </div>
+        <button id="startButton" class="primary">開始 / リスタート</button>
+      </header>
+
+      <div class="canvas-wrap">
+        <canvas id="gameCanvas" width="800" height="800" aria-label="トライン練習フィールド"></canvas>
+        <div id="castBar" class="cast-bar hidden" aria-live="polite">
+          <div class="cast-bar-label"><span class="cast-icon">◆</span> <span id="castBarLabel">破壊の翼</span></div>
+          <div class="cast-bar-track"><div id="castBarFill" class="cast-bar-fill"></div></div>
+        </div>
+        <div id="resultOverlay" class="result-overlay hidden">
+          <strong id="resultTitle"></strong>
+          <div id="resultReason" class="result-reasons"></div>
+          <div class="result-actions">
+            <button id="retryButton" class="retry-button">Retry</button>
+            <button id="replayButton" class="replay-button" disabled>Replay</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="hotbar" class="hotbar" aria-label="ジョブアクションホットバー" aria-live="polite">
+        <button id="hotbarSlot1" class="hotbar-slot" type="button" data-key="1">
+          <span class="hotbar-key">1</span><span class="hotbar-name">アクション1</span><strong class="hotbar-state">-</strong>
+        </button>
+        <button id="hotbarSlot2" class="hotbar-slot" type="button" data-key="2">
+          <span class="hotbar-key">2</span><span class="hotbar-name">アクション2</span><strong class="hotbar-state">-</strong>
+        </button>
+        <button id="hotbarSlot3" class="hotbar-slot" type="button" data-key="3">
+          <span class="hotbar-key">3</span><span class="hotbar-name">アクション3</span><strong class="hotbar-state">-</strong>
+        </button>
+        <div id="hotbarNote" class="hotbar-note"></div>
+      </div>
+    </section>
+
+    <aside class="side-panel">
+      <section class="card control-card">
+        <h2>練習設定</h2>
+        <div class="setting-label">操作する役割</div>
+        <div class="segmented" id="roleSelector">
+          <button data-role="MT" class="active">MT</button>
+          <button data-role="ST">ST</button>
+          <button data-role="DPS">DPS</button>
+          <button data-role="HEALER">ヒーラー</button>
+        </div>
+        <div id="slotSetting" class="slot-setting hidden">
+          <div class="setting-label">担当スロット</div>
+          <div class="segmented slot-selector" id="slotSelector"></div>
+        </div>
+        <button id="sideStartButton" class="primary wide">開始</button>
+        <button id="sideReplayButton" class="secondary wide" disabled>直前の試行をリプレイ</button>
+        <label class="debug-toggle"><input id="hitboxToggle" type="checkbox" checked /> <span>当たり判定を表示</span></label>
+        <label class="debug-toggle"><input id="tankTargetToggle" type="checkbox" /> <span>タンクAoE対象を表示</span></label>
+        <label class="debug-toggle"><input id="markerToggle" type="checkbox" checked /> <span>フィールドマーカーを表示</span></label>
+        <label class="debug-toggle"><input id="dualArmRampageToggle" type="checkbox" /> <span>双腕暴走モード</span></label>
+        <label class="debug-toggle"><input id="trineWingOnlyToggle" type="checkbox" /> <span>トライン＋破壊の翼のみ</span></label>
+        <label class="debug-toggle"><input id="manualTrineToggle" type="checkbox" /> <span>1回目トラインを実在パターンから指定</span></label>
+        <div id="manualTrineSetting" class="manual-trine-setting hidden">
+          <label for="manualTrinePattern">1回目トライン配置</label>
+          <select id="manualTrinePattern"></select>
+          <p id="manualTrineNote" class="setting-help">1回目トラインの全20配置を、連続型／分離型の分類付きで選択できます。</p>
+        </div>
+        <button id="soilButton" class="secondary wide" disabled>陣を手動設置（1）</button>
+        <div id="actionPanel" class="action-panel hidden" aria-live="polite">
+          <div class="action-row"><span id="action1Label">1 アクション</span><strong id="action1State">Ready</strong></div>
+          <div class="action-row"><span id="action2Label">2 アクション</span><strong id="action2State">Ready</strong></div>
+          <div id="gateState" class="action-note"></div>
+        </div>
+        <p class="lock-note">開始後は役割を変更できません。</p>
+      </section>
+
+      <section class="card">
+        <h2>操作</h2>
+        <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>、矢印キー、またはゲームパッド左スティック</p>
+        <p>各担当の固有アクションは画面下のホットバーに対応。<kbd>1</kbd><kbd>2</kbd><kbd>3</kbd>またはホットバーをクリック。</p>
+        <p>固定俯瞰・北固定。判定基準はキャラクターの中心点です。</p>
+      </section>
+
+      <section class="card">
+        <h2>状態</h2>
+        <dl class="status-grid">
+          <dt>フェーズ</dt><dd id="phaseText">待機中</dd>
+          <dt>経過</dt><dd id="timeText">0.0 s</dd>
+          <dt>パターン</dt><dd id="patternText">-</dd>
+          <dt>場内距離</dt><dd id="distanceText">2.5y / 22y</dd>
+          <dt>NPC</dt><dd id="npcText">7人・待機</dd>
+        </dl>
+      </section>
+
+      <section class="card compact">
+        <h2>v1.2.2 追加内容</h2>
+        <ul>
+          <li>D1：1でボスへ突進、2で後方10mへ高速移動</li>
+          <li>D1は各スキル個別リキャスト10秒</li>
+          <li>D2：1で前方15m、2で後方15mへ高速移動</li>
+          <li>D2 NPCは③着弾後にボス方向へ15m移動し、徒歩でタゲサ外へ調整</li>
+          <li>終末の双腕の頭割り範囲を半径8mへ調整</li>
+          <li>D2は移動前地点に10秒間ゲートを生成</li>
+          <li>1で生成した場合は2、2で生成した場合は1が帰還キーへ変化</li>
+          <li>D2は20秒の共有リキャスト。帰還はリキャスト中も可能</li>
+          <li>D2：3で20m以内を指定する縮地。2スタック、1スタック60秒</li>
+          <li>フィールドを半径22mへ拡張し、床模様を1リング追加</li>
+          <li>ターゲットサークルは南側（背面）の1/4だけ枠線なし</li>
+          <li>ゲートを使うか10秒経過すると消滅</li>
+          <li>役割別の画面下ホットバーを追加</li>
+          <li>H1：前方移動・運命の輪・アーサリースター</li>
+          <li>H2：陣・中央陣・ケーラコレ</li>
+          <li>スキル移動とゲート表示をReplayへ記録</li>
+        </ul>
+        <p class="provisional">移動先がフィールド外の場合は、通常どおり落下失敗になります。</p>
+      </section>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
