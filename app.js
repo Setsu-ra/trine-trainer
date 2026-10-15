@@ -4127,7 +4127,21 @@ window.addEventListener('keydown', event => {
 window.addEventListener('keyup', event => keys.delete(event.code));
 startButton.addEventListener('click', () => resetGame());
 sideStartButton.addEventListener('click', () => resetGame());
-retryButton.addEventListener('click', () => resetGame());
+function returnToPracticeSettings() {
+  // Retry opens the pre-start settings rather than immediately starting another attempt.
+  game.running = false;
+  game.finished = false;
+  game.replayMode = false;
+  clearJoystick();
+  keys.clear();
+  overlay.classList.add('hidden');
+  castBar.classList.add('hidden');
+  document.body.classList.remove('training-started');
+  setRoleSelectionLocked(false);
+  updateManualTrineControls();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+retryButton.addEventListener('click', returnToPracticeSettings);
 replayButton.addEventListener('click', () => { if (lastReplayData) resetGame(lastReplayData); });
 sideReplayButton.addEventListener('click', () => { if (lastReplayData) resetGame(lastReplayData); });
 hitboxToggle.addEventListener('change', () => { showHitboxes = hitboxToggle.checked; });
