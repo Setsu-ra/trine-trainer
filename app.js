@@ -4055,6 +4055,53 @@ function loop(now) {
   }
 }
 
+
+// Touch movement maps onto existing keyboard movement, preserving all encounter logic.
+const joystick = document.getElementById('touchJoystick');
+const joystickKnob = document.getElementById('joystickKnob');
+const touchDirectionCodes = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];
+let joystickPointerId = null;
+function clearJoystick() {
+  joystickPointerId = null;
+  touchDirectionCodes.forEach(code => keys.delete(code));
+  joystickKnob.style.transform = 'translate(0px, 0px)';
+}
+function updateJoystick(event) {
+  const rect = joystick.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  const maxRadius = rect.width * .32;
+  const x = event.clientX - centerX, y = event.clientY - centerY;
+  const magnitude = Math.hypot(x, y);
+  const factor = magnitude > maxRadius ? maxRadius / magnitude : 1;
+  const px = x * factor, py = y * factor;
+  joystickKnob.style.transform = `translate(${px}px, ${py}px)`;
+  touchDirectionCodes.forEach(code => keys.delete(code));
+  if (game.replayMode || magnitude < maxRadius * .19) return;
+  if (y < -maxRadius * .25) keys.add('KeyW');
+  if (y > maxRadius * .25) keys.add('KeyS');
+  if (x < -maxRadius * .25) keys.add('KeyA');
+  if (x > maxRadius * .25) keys.add('KeyD');
+}
+joystick.addEventListener('pointerdown', event => {
+  if (joystickPointerId !== null) return;
+  event.preventDefault();
+  joystickPointerId = event.pointerId;
+  joystick.setPointerCapture(event.pointerId);
+  updateJoystick(event);
+});
+joystick.addEventListener('pointermove', event => {
+  if (event.pointerId !== joystickPointerId) return;
+  event.preventDefault();
+  updateJoystick(event);
+});
+for (const type of ['pointerup','pointercancel','lostpointercapture']) {
+  joystick.addEventListener(type, event => {
+    if (event.pointerId === joystickPointerId) clearJoystick();
+  });
+}
+window.addEventListener('blur', clearJoystick);
+
 window.addEventListener('keydown', event => {
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Digit1','Digit2','Digit3'].includes(event.code)) event.preventDefault();
   if (!event.repeat && event.code === 'Digit1') {
