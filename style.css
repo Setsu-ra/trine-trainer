@@ -161,3 +161,29 @@ kbd { display:inline-block; min-width:27px; padding:3px 7px; margin-right:4px; b
 .joystick-ring { position:absolute; inset:0; border-radius:50%; border:2px solid rgba(175,218,255,.75); background:rgba(10,24,44,.55); display:grid; place-items:center; pointer-events:none; }
 .joystick-knob { width:42%; aspect-ratio:1; border-radius:50%; border:2px solid #c3eaff; background:rgba(87,157,218,.85); box-shadow:0 0 14px rgba(40,128,255,.45); }
 @media (pointer:coarse) { .touch-joystick { display:block; } .canvas-wrap { touch-action:manipulation; } .hotbar-slot { touch-action:manipulation; } }
+
+/* v1.0.3: mobile-first preflight settings and a dedicated portrait joystick area. */
+.setup-overlay { position:absolute; inset:0; z-index:15; border-radius:18px; background:#0b1220; overflow-y:auto; overscroll-behavior:contain; }
+.setup-mount { padding:clamp(8px,3vw,22px); max-width:650px; margin:auto; }
+.setup-mount .control-card { box-shadow:none; background:#101a2b; }
+.training-started .setup-overlay { display:none; }
+.mobile-controls { display:none; }
+@media (max-width: 980px), (pointer:coarse) {
+  .canvas-wrap { min-height: min(92vw,800px); }
+  .setup-overlay { position:absolute; inset:0; }
+  .mobile-controls { display:none; margin:10px auto 0; width:100%; align-items:center; gap:12px; }
+  .training-started .mobile-controls { display:flex; }
+  .mobile-joystick-mount { position:relative; flex:0 0 126px; height:126px; }
+  .touch-joystick { display:block !important; position:absolute; left:0; top:0; bottom:auto; width:126px; height:126px; z-index:2; }
+  .mobile-control-hint { color:#b7c9e6; font-size:12px; line-height:1.5; }
+  .hotbar { margin-top:8px; }
+}
+@media (max-width:600px) {
+  .title-row #startButton { display:none; }
+  .title-row { margin-bottom:8px; }
+  .setup-mount { padding:8px; }
+  .setup-mount .control-card { padding:12px; }
+  .setup-overlay { border-radius:12px; }
+  .mobile-joystick-mount { flex-basis:116px; height:116px; }
+  .touch-joystick { width:116px; height:116px; }
+}

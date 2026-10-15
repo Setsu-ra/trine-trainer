@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Trine Trainer v1.0.2</title>
+  <title>Trine Trainer v1.0.3</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,16 +12,14 @@
       <header class="title-row">
         <div>
           <p class="eyebrow">仕様書 v1.0 準拠・軽量表示・役割別NPC移動</p>
-          <h1>Trine Trainer <span>v1.0.2</span></h1>
+          <h1>Trine Trainer <span>v1.0.3</span></h1>
         </div>
         <button id="startButton" class="primary">開始 / リスタート</button>
       </header>
 
       <div class="canvas-wrap">
+        <div id="setupOverlay" class="setup-overlay"><div id="setupMount" class="setup-mount"></div></div>
         <canvas id="gameCanvas" width="800" height="800" aria-label="トライン練習フィールド"></canvas>
-        <div id="touchJoystick" class="touch-joystick" aria-label="移動用ジョイスティック">
-          <div class="joystick-ring"><div id="joystickKnob" class="joystick-knob"></div></div>
-        </div>
         <div id="castBar" class="cast-bar hidden" aria-live="polite">
           <div class="cast-bar-label"><span class="cast-icon">◆</span> <span id="castBarLabel">破壊の翼</span></div>
           <div class="cast-bar-track"><div id="castBarFill" class="cast-bar-fill"></div></div>
@@ -36,6 +34,10 @@
         </div>
       </div>
 
+      <div id="mobileControls" class="mobile-controls">
+        <div id="mobileJoystickMount" class="mobile-joystick-mount"><div id="touchJoystick" class="touch-joystick" aria-label="移動用ジョイスティック"><div class="joystick-ring"><div id="joystickKnob" class="joystick-knob"></div></div></div></div>
+        <p class="mobile-control-hint">左スティックで移動 / 下のボタンでスキル</p>
+      </div>
       <div id="hotbar" class="hotbar" aria-label="ジョブアクションホットバー" aria-live="polite">
         <button id="hotbarSlot1" class="hotbar-slot" type="button" data-key="1">
           <span class="hotbar-key">1</span><span class="hotbar-name">アクション1</span><strong class="hotbar-state">-</strong>

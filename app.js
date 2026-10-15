@@ -1785,6 +1785,8 @@ function setRoleSelectionLocked(locked) {
 }
 
 function resetGame(replayData = null) {
+  document.body.classList.add('training-started');
+  clearJoystick();
   game.running = true;
   setRoleSelectionLocked(true);
   game.finished = false;
@@ -4056,6 +4058,10 @@ function loop(now) {
 }
 
 
+// Start with the existing settings card in the field area, avoiding duplicate IDs.
+const setupMount = document.getElementById('setupMount');
+const setupCard = document.querySelector('.control-card');
+setupMount.appendChild(setupCard);
 // Touch movement maps onto existing keyboard movement, preserving all encounter logic.
 const joystick = document.getElementById('touchJoystick');
 const joystickKnob = document.getElementById('joystickKnob');
