@@ -187,3 +187,36 @@ kbd { display:inline-block; min-width:27px; padding:3px 7px; margin-right:4px; b
   .mobile-joystick-mount { flex-basis:116px; height:116px; }
   .touch-joystick { width:116px; height:116px; }
 }
+
+/* v1.0.5: portrait controls: joystick left, skill buttons right. */
+.mobile-controls, .mobile-controls *, .hotbar-slot, .hotbar-slot * {
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none;
+}
+@media (max-width:980px), (pointer:coarse) {
+  .training-started .mobile-controls {
+    display:flex; flex-direction:row; align-items:center; justify-content:space-between;
+    gap:10px; padding:4px 0; box-sizing:border-box;
+    touch-action:pan-y;
+  }
+  .mobile-controls .hotbar {
+    flex:1 1 0; min-width:0; width:auto; margin:0;
+    display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px;
+  }
+  .mobile-controls .hotbar-slot {
+    min-width:0; min-height:72px; padding:27px 5px 6px;
+    text-align:center; touch-action:manipulation;
+  }
+  .mobile-controls .hotbar-key {
+    top:5px; left:50%; transform:translateX(-50%); width:20px; height:19px;
+    font-size:11px;
+  }
+  .mobile-controls .hotbar-name { font-size:10px; overflow-wrap:anywhere; }
+  .mobile-controls .hotbar-state { margin-top:3px; font-size:10px; }
+  .mobile-controls .hotbar-note { display:none; }
+  .mobile-controls .touch-joystick { touch-action:none; }
+}
+@media (max-width:600px) {
+  .mobile-joystick-mount { flex:0 0 100px; height:100px; }
+  .touch-joystick { width:100px; height:100px; }
+}

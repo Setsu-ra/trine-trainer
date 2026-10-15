@@ -4062,6 +4062,27 @@ function loop(now) {
 const setupMount = document.getElementById('setupMount');
 const setupCard = document.querySelector('.control-card');
 setupMount.appendChild(setupCard);
+// Move the same live skill buttons beside the joystick on narrow/touch screens.
+// Preserve the existing hotbar element so its event listeners and cooldown state survive.
+const mobileControls = document.getElementById('mobileControls');
+const originalHotbarParent = hotbar.parentElement;
+const originalHotbarNextSibling = hotbar.nextSibling;
+function arrangeTouchControls() {
+  const mobileLayout = window.matchMedia('(max-width: 980px), (pointer: coarse)').matches;
+  if (mobileLayout && hotbar.parentElement !== mobileControls) {
+    mobileControls.appendChild(hotbar);
+  } else if (!mobileLayout && hotbar.parentElement !== originalHotbarParent) {
+    originalHotbarParent.insertBefore(hotbar, originalHotbarNextSibling);
+  }
+}
+arrangeTouchControls();
+window.addEventListener('resize', arrangeTouchControls);
+// Prevent iOS text-selection/copy callouts while using multi-touch controls.
+for (const target of [mobileControls, hotbar, document.getElementById('touchJoystick')]) {
+  target.addEventListener('contextmenu', event => event.preventDefault());
+  target.addEventListener('selectstart', event => event.preventDefault());
+}
+
 // Touch movement maps onto existing keyboard movement, preserving all encounter logic.
 const joystick = document.getElementById('touchJoystick');
 const joystickKnob = document.getElementById('joystickKnob');
